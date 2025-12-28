@@ -5,26 +5,29 @@
 }
 
 body {
-  background: #5fa8d3;
+  background: #78b7e6;
   overflow: hidden;
-  font-family: "Segoe UI", sans-serif;
+  font-family: Arial, sans-serif;
 }
 
-/* Fullscreen game */
 .game-wrapper {
   position: fixed;
   inset: 0;
 }
 
+/* Canvas */
 canvas {
   width: 100vw;
   height: 100vh;
   display: block;
-  background: linear-gradient(#5fa8d3 70%, #2e7d32 70%);
+  background: linear-gradient(
+    #78b7e6 65%,
+    #2e7d32 65%
+  );
 }
 
 /* GAME OVER UI */
-.game-over-card {
+#gameOverUI {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.6);
@@ -33,35 +36,36 @@ canvas {
   align-items: center;
   flex-direction: column;
   color: #fff;
-  z-index: 100;
+  z-index: 10;
+  padding: ;
 }
 
-.game-over-card h2 {
-  font-size: 32px;
-  margin-bottom: 8px;
+#gameOverUI h2 {
+  font-size: 34px;
+  /* margin-bottom: 8px; */
 }
 
-.game-over-card p {
+#gameOverUI p {
   font-size: 18px;
-  margin-bottom: 20px;
+
 }
 
-.game-over-card button {
+#restartBtn {
   padding: 14px 36px;
-  font-size: 16px;
   border-radius: 30px;
   border: none;
-  background: #ff5252;
+  background: #ff4d4d;
   color: #fff;
+  font-size: 16px;
 }
 
-/* Instagram inside Game Over */
-.insta-gameover {
+/* Instagram Button */
+.insta-btn {
   position: absolute;
   left: 20px;
   top: 20px;
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   background: #e1306c;
   border-radius: 50%;
   display: flex;
@@ -69,6 +73,6 @@ canvas {
   align-items: center;
 }
 
-.insta-gameover img {
+.insta-btn img {
   width: 22px;
 }
