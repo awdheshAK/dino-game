@@ -31,11 +31,33 @@ let gameOver = false;
 const gameOverUI = document.getElementById("gameOverUI");
 const restartBtn = document.getElementById("restartBtn");
 
+/* Resize Canvas */
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight * 0.6;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+/* Rotate Check */
+function checkOrientation() {
+  const rotateMsg = document.getElementById("rotateMsg");
+  if (window.innerHeight > window.innerWidth) {
+    rotateMsg.style.display = "flex";
+  } else {
+    rotateMsg.style.display = "none";
+  }
+}
+window.addEventListener("resize", checkOrientation);
+checkOrientation();
+
+/* Draw Ground */
 function drawGround() {
-  ctx.fillStyle = "#3a6521ff";
+  ctx.fillStyle = "#2e7d32";
   ctx.fillRect(0, groundY, canvas.width, 80);
 }
 
+/* Game Loop */
 function update() {
   if (gameOver) return;
 
@@ -73,29 +95,24 @@ function update() {
 
   ctx.fillStyle = "#000";
   ctx.font = "16px monospace";
-  ctx.fillText("Score: " + score, 620, 25);
-  ctx.fillText("High: " + highScore, 620, 45);
+  ctx.fillText("Score: " + score, canvas.width - 180, 25);
+  ctx.fillText("High: " + highScore, canvas.width - 180, 45);
 }
 
+/* End Game */
 function endGame() {
   gameOver = true;
   gameOverSound.play();
 
   if (score > highScore) highScore = score;
 
+  document.getElementById("finalScore").innerText =
+    "Score: " + score + " | High: " + highScore;
+
   gameOverUI.style.display = "flex";
 }
 
-function jump() {
-  if (!gameOver && player.vy === 0) {
-    player.vy = -14;
-    jumpSound.currentTime = 0;
-    jumpSound.play();
-  }
-}
-
-
-
+/* Restart */
 function restartGame() {
   score = 0;
   cameraX = 0;
@@ -107,13 +124,23 @@ function restartGame() {
 
 restartBtn.addEventListener("click", restartGame);
 
-document.addEventListener("keydown", () => {
+/* Jump Controls */
+function jump() {
   if (!gameOver && player.vy === 0) {
     player.vy = -14;
     jumpSound.currentTime = 0;
     jumpSound.play();
   }
+}
+
+document.addEventListener("keydown", e => {
+  if (e.code === "Space") jump();
+});
+
+canvas.addEventListener("click", jump);
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  jump();
 });
 
 setInterval(update, 30);
-
