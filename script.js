@@ -21,7 +21,11 @@ let player = {
 let gravity = 0.9;
 let groundY;
 
-let speed = 6;
+/* 🔥 SPEED & LEVEL */
+let baseSpeed = 6;
+let speed = baseSpeed;
+let level = 0;
+
 let cameraX = 0;
 let obstacles = [];
 
@@ -36,8 +40,8 @@ const restartBtn = document.getElementById("restartBtn");
 const isMobile = window.innerWidth < 768;
 
 /* 🔹 Obstacle settings */
-const MAX_OBSTACLES = isMobile ? 3 : 6;   // ✅ mobile 3 | laptop 6
-const OBSTACLE_GAP = isMobile ? 260 : 200;
+const MAX_OBSTACLES = isMobile ? 3 : 6;
+const OBSTACLE_GAP = isMobile ? 300 : 220;
 
 /* Resize canvas */
 function resizeCanvas() {
@@ -50,9 +54,34 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-/* Draw ground */
+/* 🎨 Draw sky + ground (color change by level) */
 function drawGround() {
-  ctx.fillStyle = "#2e7d32";
+  let sky = "#7ec8f5";
+  let ground = "#2e7d32";
+
+  if (level >= 1) {
+    sky = "#90caf9";
+    ground = "#388e3c";
+  }
+  if (level >= 2) {
+    sky = "#ffcc80";
+    ground = "#6d4c41";
+  }
+  if (level >= 3) {
+    sky = "#ef5350";
+    ground = "#3e2723";
+  }
+  if (level >= 4) {
+    sky = "#263238";
+    ground = "#1b5e20";
+  }
+
+  // Sky
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, canvas.width, groundY);
+
+  // Ground
+  ctx.fillStyle = ground;
   ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
 }
 
@@ -71,8 +100,12 @@ function update() {
     player.vy = 0;
   }
 
-  cameraX += speed;
+  /* 🔥 Score → level → speed */
   score++;
+  level = Math.floor(score / 100);
+  speed = baseSpeed + level;
+
+  cameraX += speed;
 
   drawGround();
   ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
@@ -89,23 +122,21 @@ function update() {
     }
   });
 
-  /* 🔹 Keep obstacle count fixed */
- if (obstacles.length < MAX_OBSTACLES) {
-  const lastX = obstacles.length
-    ? obstacles[obstacles.length - 1].x
-    : cameraX + canvas.width;
+  /* Keep obstacle count + spacing */
+  if (obstacles.length < MAX_OBSTACLES) {
+    const lastX = obstacles.length
+      ? obstacles[obstacles.length - 1].x
+      : cameraX + canvas.width;
 
-  obstacles.push({
-    x: lastX + OBSTACLE_GAP,
-    y: groundY - 36
-  });
-}
+    obstacles.push({
+      x: lastX + OBSTACLE_GAP,
+      y: groundY - 36
+    });
+  }
 
+  obstacles = obstacles.filter(o => o.x - cameraX > -60);
 
-  /* Remove passed obstacles */
-  obstacles = obstacles.filter(o => o.x - cameraX > -50);
-
-  /* Score */
+  /* Score text */
   ctx.fillStyle = "#000";
   ctx.font = "18px monospace";
   ctx.fillText("Score: " + score, canvas.width - 150, 30);
@@ -128,6 +159,8 @@ function endGame() {
 /* Restart */
 function restartGame() {
   score = 0;
+  level = 0;
+  speed = baseSpeed;
   cameraX = 0;
   obstacles = [];
   player.vy = 0;
