@@ -11,18 +11,17 @@ const obstacleImg = new Image();
 obstacleImg.src = "cactus.png";
 
 let player = {
-  x: 100,
-  y: 180,
-  width: 20,
-  height: 20,
+  x: 80,
+  y: 0,
+  width: 30,
+  height: 30,
   vy: 0
 };
 
-let gravity = 0.8;
-let groundY = 220;
-
+let gravity = 0.9;
+let groundY;
 let cameraX = 0;
-let obstacles = [{ x: 500, y: 190 }];
+let obstacles = [];
 
 let score = 0;
 let highScore = 0;
@@ -31,33 +30,22 @@ let gameOver = false;
 const gameOverUI = document.getElementById("gameOverUI");
 const restartBtn = document.getElementById("restartBtn");
 
-/* Resize Canvas */
+/* Fullscreen canvas */
 function resizeCanvas() {
   canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight * 0.6;
+  canvas.height = window.innerHeight;
+  groundY = canvas.height * 0.75;
 }
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-/* Rotate Check */
-function checkOrientation() {
-  const rotateMsg = document.getElementById("rotateMsg");
-  if (window.innerHeight > window.innerWidth) {
-    rotateMsg.style.display = "flex";
-  } else {
-    rotateMsg.style.display = "none";
-  }
-}
-window.addEventListener("resize", checkOrientation);
-checkOrientation();
-
-/* Draw Ground */
+/* Draw ground */
 function drawGround() {
   ctx.fillStyle = "#2e7d32";
-  ctx.fillRect(0, groundY, canvas.width, 80);
+  ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
 }
 
-/* Game Loop */
+/* Game loop */
 function update() {
   if (gameOver) return;
 
@@ -71,35 +59,35 @@ function update() {
     player.vy = 0;
   }
 
-  cameraX += 3;
+  cameraX += 4;
   score++;
 
   drawGround();
   ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
 
   obstacles.forEach(obs => {
-    ctx.drawImage(obstacleImg, obs.x - cameraX, obs.y, 30, 30);
+    ctx.drawImage(obstacleImg, obs.x - cameraX, obs.y, 40, 40);
 
     if (
       obs.x - cameraX < player.x + player.width &&
-      obs.x - cameraX + 30 > player.x &&
+      obs.x - cameraX + 40 > player.x &&
       player.y + player.height > obs.y
     ) {
       endGame();
     }
   });
 
-  if (cameraX % 300 === 0) {
-    obstacles.push({ x: cameraX + 800, y: 190 });
+  if (cameraX % 350 === 0) {
+    obstacles.push({ x: cameraX + canvas.width, y: groundY - 40 });
   }
 
   ctx.fillStyle = "#000";
-  ctx.font = "16px monospace";
-  ctx.fillText("Score: " + score, canvas.width - 180, 25);
-  ctx.fillText("High: " + highScore, canvas.width - 180, 45);
+  ctx.font = "18px monospace";
+  ctx.fillText("Score: " + score, canvas.width - 150, 30);
+  ctx.fillText("High: " + highScore, canvas.width - 150, 55);
 }
 
-/* End Game */
+/* End game */
 function endGame() {
   gameOver = true;
   gameOverSound.play();
@@ -116,18 +104,18 @@ function endGame() {
 function restartGame() {
   score = 0;
   cameraX = 0;
-  player.y = 180;
-  obstacles = [{ x: 500, y: 190 }];
+  obstacles = [];
+  player.y = 0;
   gameOver = false;
   gameOverUI.style.display = "none";
 }
 
 restartBtn.addEventListener("click", restartGame);
 
-/* Jump Controls */
+/* Jump */
 function jump() {
   if (!gameOver && player.vy === 0) {
-    player.vy = -14;
+    player.vy = -16;
     jumpSound.currentTime = 0;
     jumpSound.play();
   }
