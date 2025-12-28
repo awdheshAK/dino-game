@@ -86,6 +86,16 @@ function endGame() {
   gameOverUI.style.display = "flex";
 }
 
+function jump() {
+  if (!gameOver && player.vy === 0) {
+    player.vy = -14;
+    jumpSound.currentTime = 0;
+    jumpSound.play();
+  }
+}
+
+
+
 function restartGame() {
   score = 0;
   cameraX = 0;
@@ -106,3 +116,4 @@ document.addEventListener("keydown", () => {
 });
 
 setInterval(update, 30);
+
